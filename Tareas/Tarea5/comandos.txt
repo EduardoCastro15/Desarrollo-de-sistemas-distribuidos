@@ -1,0 +1,15 @@
+JR2015080213-
+eduardocastro15
+123456aA&123456aA&
+sudo apt update
+sudo apt install openjdk-8-jdk-headless
+
+52.142.62.135
+52.136.121.174
+52.188.70.98
+52.136.121.187
+
+10.0.0.4
+10.0.0.5
+10.0.0.6
+10.0.0.7
