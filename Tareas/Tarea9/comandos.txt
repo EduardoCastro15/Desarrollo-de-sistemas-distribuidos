@@ -1,0 +1,49 @@
+Instalación del servidor:40.121.69.69
+
+sudo apt update
+sudo apt install nfs-kernel-server
+sudo apt install portmap
+
+sudo mkdir /var/servidor -p
+
+ls -l /var
+
+sudo chown nobody:nogroup /var/servidor
+sudo chmod 777 /var/servidor
+
+ls -l /var
+
+sudo nano /etc/exports
+/var/servidor localhost(insecure,rw,sync,no_subtree_check)
+sudo exportfs -ra
+sudo exportfs
+sudo systemctl restart nfs-kernel-server
+
+-------------------------------------------------------------------
+Instalación del cliente:20.124.254.205
+Instalación del cliente:20.124.254.241
+
+sudo apt update
+sudo apt install nfs-common
+sudo apt install portmap
+sudo mkdir -p /cliente
+ssh -fNv -L 3049:localhost:2049 eduardocastro15@40.121.69.69
+sudo mount -t nfs -o port=3049 localhost:/var/servidor /cliente
+
+mount
+df -h
+
+sudo nano /cliente/archivo.txt
+“Esta es una prueba de NFS”
+cat /cliente/archivo.txt
+
+sudo nano /etc/fstab
+40.121.69.69:/var/servidor /cliente nfs defaults 0 0
+mount /cliente
+mount 40.121.69.69:/var/servidor
+
+sudo systemctl restart nfs-kernel-service
+more /cliente/archivo.txt
+
+rm -r /cliente/archivo.txt
+ls /cliente
