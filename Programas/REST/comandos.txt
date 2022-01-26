@@ -1,0 +1,82 @@
+
+___________________________________________INICIO_______________________________________________
+sudo apt update
+sudo apt install openjdk-8-jdk-headless
+___________________________________________SFTP_______________________________________________
+put "C:\Users\georg\Desktop\ESCOM\8vo Semestre\Distribuidos\Programas\REST\apache-tomcat-8.5.72.zip"
+put "C:\Users\georg\Desktop\ESCOM\8vo Semestre\Distribuidos\Programas\REST\Servicio.zip"
+___________________________________________UNZIP_______________________________________________
+sudo apt install unzip
+unzip apache-tomcat-8.5.72.zip
+unzip Servicio.zip
+___________________________________________VARIABLES ENTORNO_______________________________________________
+export CATALINA_HOME=/home/eduardocastro15/apache-tomcat-8.5.72/apache-tomcat-8.5.72
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+___________________________________________LEVANTAR TOMCAT_______________________________________________
+sh $CATALINA_HOME/bin/catalina.sh start
+sh $CATALINA_HOME/bin/catalina.sh stop
+___________________________________________MYSQLinstalacion_______________________________________________
+sudo apt update
+sudo apt install mysql-server
+sudo mysql_secure_installation
+sudo mysql
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+FLUSH PRIVILEGES;
+quit
+___________________________________________MYSQLusuario_______________________________________________
+mysql -u root -p
+create user hugo@localhost identified by 'password';
+grant all on servicio_web.* to hugo@localhost;
+quit
+___________________________________________MYSQLbaseDatos_______________________________________________
+mysql -u hugo -p
+create database servicio_web;
+use servicio_web;
+
+create table usuarios
+(
+    id_usuario integer auto_increment primary key,
+    email varchar(256) not null,
+    nombre varchar(100) not null,
+    apellido_paterno varchar(100) not null,
+    apellido_materno varchar(100),
+    fecha_nacimiento date not null,
+    telefono varchar(20),
+    genero char(1)
+);
+create table fotos_usuarios
+(
+    id_foto integer auto_increment primary key,
+    foto longblob,
+    id_usuario integer not null
+);
+
+alter table fotos_usuarios add foreign key (id_usuario) references usuarios(id_usuario);
+create unique index usuarios_1 on usuarios(email);
+quit
+___________________________________________SERVICIOWEB_______________________________________________
+/*Para eliminar el servicio web se deberá eliminar el archivo "Servicio.war" y el directorio "Servicio", en éste orden.
+Cada vez que se modifique el archivo Servicio.java se deberá compilar, generar el archivo Servicio.war, borrar el archivo
+Servicio.war y el directorio Servicio del directorio webapps de Tomcat, y copiar el archivo Servicio.war al directorio webapps de Tomcat.*/
+
+export CATALINA_HOME=/home/eduardocastro15/apache-tomcat-8.5.72/apache-tomcat-8.5.72
+cd Servicio/
+javac -cp $CATALINA_HOME/lib/javax.ws.rs-api-2.0.1.jar:$CATALINA_HOME/lib/gson-2.3.1.jar:. negocio/Servicio.java
+
+cd META-INF/
+nano context.xml
+
+cd ..
+rm WEB-INF/classes/negocio/*
+cp negocio/*.class WEB-INF/classes/negocio/.
+jar cvf Servicio.war WEB-INF META-INF
+
+cp Servicio.war /home/eduardocastro15/apache-tomcat-8.5.72/apache-tomcat-8.5.72/webapps
+___________________________________________EXTRAS_______________________________________________
+ls catalina.out
+vi catalina.out
+rm -r
+cp  /*
+pwd
+printenv
+sudo waagent -deprovision
